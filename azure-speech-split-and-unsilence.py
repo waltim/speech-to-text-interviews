@@ -45,25 +45,25 @@ for file in glob.glob("*.wav"):
        output = path.join(path.dirname(path.realpath(__file__)), 'output/'+out_file)
        normalized_chunk.export(output, bitrate = "192k", format = "wav")
        
-#     import azure.cognitiveservices.speech as speechsdk
+    import azure.cognitiveservices.speech as speechsdk
 
-#     f= open(dir_path+"/transcriptions/splited-"+file[:-4]+".txt","w+")
-#     chunks =  os.listdir(dir_path+'/output/')
+    f= open(dir_path+"/transcriptions/splited-"+file[:-4]+".txt","w+")
+    chunks =  os.listdir(dir_path+'/output/')
     
-#     from tkinter import Tcl
-#     for chunkfile in Tcl().call('lsort', '-dict', chunks):
-#         print(chunkfile)
-#         audio = dir_path+'/output/'+chunkfile
-#         # print(audio)
-#         def from_file():
-#             speech_config = speechsdk.SpeechConfig(subscription=SUBSCRIPTION, region=REGION, speech_recognition_language="pt-BR")
-#             audio_input = speechsdk.AudioConfig(filename=audio)
-#             speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_input)
-#             result = speech_recognizer.recognize_once_async().get()
-#             f.write(" "+result.text)
-#         from_file()
-#     f.close()
-#     exec(open(dir_path+'/clean-chunks.py').read())
+    from tkinter import Tcl
+    for chunkfile in Tcl().call('lsort', '-dict', chunks):
+        print(chunkfile)
+        audio = dir_path+'/output/'+chunkfile
+        # print(audio)
+        def from_file():
+            speech_config = speechsdk.SpeechConfig(subscription=SUBSCRIPTION, region=REGION, speech_recognition_language="pt-BR")
+            audio_input = speechsdk.AudioConfig(filename=audio)
+            speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_input)
+            result = speech_recognizer.recognize_once_async().get()
+            f.write(" "+result.text)
+        from_file()
+    f.close()
+    exec(open(dir_path+'/clean-chunks.py').read())
     
-# exec(open(dir_path+'/clean-interviews.py').read())
-# print('############## Finished ###################')
+exec(open(dir_path+'/clean-interviews.py').read())
+print('############## Finished ###################')
