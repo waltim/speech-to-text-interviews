@@ -48,9 +48,10 @@ for file in glob.glob("*.wav"):
     import azure.cognitiveservices.speech as speechsdk
 
     f= open(dir_path+"/transcriptions/splited-"+file[:-4]+".txt","w+")
-    chunks =  os.listdir(dir_path+'/output/')
     
     from tkinter import Tcl
+    os.chdir(dir_path+'/output/')
+    chunks = glob.glob("*.wav")
     for chunkfile in Tcl().call('lsort', '-dict', chunks):
         print(chunkfile)
         audio = dir_path+'/output/'+chunkfile

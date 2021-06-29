@@ -20,6 +20,8 @@ with open(GOOGLE_CLOUD_SPEECH_CREDENTIALS) as f:
 
 dir_path = os.path.dirname(__file__)
 
+# exec(open(dir_path+'/mkv-to-mp4.py').read()) #able this command if you need to convert all mkv's to mp4 files.
+
 os.system('audioconvert convert interviews/ interviews/ --output-format .wav')
 
 print('############## Audio Transcribe initiate ###################')
@@ -41,7 +43,7 @@ for file in glob.glob("*.wav"):
     print('############## Chunking audio ###################')
 
     sound_file = AudioSegment.from_wav(AUDIO_FILE)
-    audio_chunks = split_on_silence(sound_file, min_silence_len=500, silence_thresh=-40)
+    audio_chunks = split_on_silence(sound_file, min_silence_len=300, silence_thresh=-40)
 
     for i, chunk in enumerate(audio_chunks): 
         # Create a silence chunk that's 0.5 seconds (or 500 ms) long for padding.
@@ -82,8 +84,6 @@ for file in glob.glob("*.wav"):
         }
 
     all_text = pool.map(transcribe, enumerate(files))
-    pool.close()
-    pool.join()
 
     transcript = ""
     for t in sorted(all_text, key=lambda x: x['idx']):
@@ -126,6 +126,9 @@ for file in glob.glob("*.wav"):
     f.close()
     os.remove(dir_path+"/transcriptions/gc-"+file[:-4]+".txt")
     exec(open(dir_path+'/clean-chunks.py').read())
-    
+
+pool.close()
+pool.join()
+
 exec(open(dir_path+'/clean-interviews.py').read())
 print('############## Finished ###################')
