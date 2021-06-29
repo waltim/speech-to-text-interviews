@@ -1,0 +1,10 @@
+# exclude everything
+interviews/*
+output/*
+transcriptions/*
+
+# exception to the rule
+!interviews/.gitkeep
+!output/.gitkeep 
+!transcriptions/.gitkeep
+.env
