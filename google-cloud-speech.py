@@ -43,7 +43,7 @@ for file in glob.glob("*.wav"):
     print('############## Chunking audio ###################')
 
     sound_file = AudioSegment.from_wav(AUDIO_FILE)
-    audio_chunks = split_on_silence(sound_file, min_silence_len=300, silence_thresh=-40)
+    audio_chunks = split_on_silence(sound_file, min_silence_len=500, silence_thresh=-40)
 
     for i, chunk in enumerate(audio_chunks): 
         # Create a silence chunk that's 0.5 seconds (or 500 ms) long for padding.
@@ -59,6 +59,8 @@ for file in glob.glob("*.wav"):
        normalized_chunk.export(output, bitrate = "192k", format = "wav")
 
     print('############## Chunking finished ###################')
+    
+    # exec(open(dir_path+'/unsilence-chunks.py').read()) # this code implies a small improviment to the recognition, but the process time are so greater
     
     r = sr.Recognizer()
     from tkinter import Tcl
@@ -103,27 +105,38 @@ for file in glob.glob("*.wav"):
     f.close()
     
     new_transcript = ""
+    new_transcript2 = ""
     file1 = open(dir_path+"/transcriptions/gc-"+file[:-4]+".txt", 'r')
     Lines = file1.readlines()
     count = 0
     for line in Lines:
         count += 1
-        line = line.replace("'","\"")
-        # line = json.dumps(line)
-        # print(line)
-        jsonLine = json.loads(line)
+        
+        line = line.replace("{'","{\"")
+        line = line.replace("':","\":")
+        line = line.replace(" '"," \"")
+        line = line.replace("',","\",")
+        line = line.replace("'}","\"}")
+        
+        jsonLine = json.loads(line, strict=False)
         if not 'results' in jsonLine:
             continue
         else:
             for alternatives in jsonLine['results']:
                 for item in alternatives['alternatives']:
-                    new_transcript = new_transcript + " "+item['transcript']
+                    new_transcript2 = new_transcript2 + " "+item['transcript'] #concatenate all strings generating a long text
+                    new_transcript = new_transcript + item['transcript']+"\n" #create a new line by each string
                     
     file1.close()
-    # print(new_transcript)
+
     with open(dir_path+"/transcriptions/google-cloud-"+file[:-4]+".txt", "w") as f:
         f.write(new_transcript)
     f.close()
+    
+    with open(dir_path+"/transcriptions/google-cloud-2-"+file[:-4]+".txt", "w") as h:
+        h.write(new_transcript2)
+    h.close()
+    
     os.remove(dir_path+"/transcriptions/gc-"+file[:-4]+".txt")
     exec(open(dir_path+'/clean-chunks.py').read())
 
